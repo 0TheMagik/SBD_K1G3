@@ -11,6 +11,8 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Middleware
 app.use(bodyParser.json());
+const cors = require('cors');
+app.use(cors());
 
 // Import routes
 const anggotaRoutes = require('./src/routes/anggotaRoutes');
@@ -30,4 +32,4 @@ app.use('/api/petugas', petugasRoutes);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-});
+})

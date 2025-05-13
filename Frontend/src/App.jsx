@@ -1,9 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+
 
 const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [kategoriList, setKategoriList] = useState([]); // State to store kategori data
 
+  // Fetch kategori data from backend
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/kategori") // Replace with your backend URL
+      .then((response) => {
+        setKategoriList(response.data); // Set the fetched data to state
+      })
+      .catch((error) => {
+        console.error("Error fetching kategori data:", error);
+      });
+  }, []);
+
+  
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -12,18 +28,23 @@ const App = () => {
           <div className="flex justify-between items-center w-full max-w-7xl mx-auto">
             {/* Logo and Mobile Menu Button */}
             <div className="flex items-center">
-              <button 
+              <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 className="mr-4 text-cyan-950 md:hidden"
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-6 w-6" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 </svg>
               </button>
               <h1 className="text-2xl sm:text-3xl font-bold text-cyan-800">Lorem</h1>
@@ -126,7 +147,17 @@ const App = () => {
       )}
 
       <div className="container mx-auto p-4 flex flex-col md:flex-row gap-6">
-        {/* Main Content */}
+        <div className="container mx-auto p-4">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Kategori</h2>
+        <ul className="space-y-4">
+          {kategoriList.map((kategori) => (
+            <li key={kategori._id} className="bg-white p-4 rounded shadow">
+              <h3 className="text-lg font-semibold text-gray-800">{kategori.nama}</h3>
+              <p className="text-gray-600">{kategori.deskripsi}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
         <div className="flex-1">
           {/* Tags Section */}
           <div className="mb-8">
