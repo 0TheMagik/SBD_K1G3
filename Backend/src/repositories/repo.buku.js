@@ -54,3 +54,16 @@ exports.getBukuByKategori = async (kategori) => {
         throw new Error(`Error fetching buku by kategori: ${error.message}`);
     }
 };
+
+// find buku by lease count number
+exports.findBukuByLeaseCount = async (count) => {
+    try {
+        const result = await Buku.aggregate([
+            { $sort: { count: -1 } },
+            { $limit: 1 }
+        ]);
+        return result.length > 0 ? result[0] : null;
+    } catch (error) {
+        throw new Error(`Error fetching buku by lease count: ${error.message}`);
+    }
+};
