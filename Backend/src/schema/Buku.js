@@ -8,7 +8,7 @@ const bukuSchema = new mongoose.Schema({
     kategori: String,
     jumlah: Number,
     tersedia: Number,
-    count: Number
+    count: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model('Buku', bukuSchema);

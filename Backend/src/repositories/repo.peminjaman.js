@@ -1,9 +1,15 @@
 const Peminjaman = require('../schema/Peminjaman');
+const Buku = require('../schema/Buku');
 
 // Create a new peminjaman
 exports.createPeminjaman = async (data) => {
     try {
         const peminjaman = new Peminjaman(data);
+        // const buku = await Buku.findById(data.id_buku);
+        // if (!buku) {
+        //     throw new Error('Buku not found');
+        // }
+        // buku.count += 1;
         return await peminjaman.save();
     } catch (error) {
         throw new Error(`Error creating peminjaman: ${error.message}`);
