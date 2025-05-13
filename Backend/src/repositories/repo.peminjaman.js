@@ -43,12 +43,12 @@ exports.getPeminjamanById = async (id) => {
 // Update peminjaman by ID
 exports.updatePeminjamanById = async (id, data) => {
     try {
-        return await Peminjaman.findByIdAndUpdate(id, data, { new: true });
-        if (!Peminjaman) {
+        const updated = await Peminjaman.findByIdAndUpdate(id, data, { new: true });
+        if (!updated) {
             throw new Error('Peminjaman not found');
         }
-        if(Peminjaman.status === 'dikembalikan'){
-            const buku = await Buku.findById(Peminjaman.id_buku);
+        if(updated.status === 'dikembalikan'){
+            const buku = await Buku.findById(updated.id_buku);
             if (!buku) {
                 throw new Error('Buku not found');
             }
@@ -57,6 +57,7 @@ exports.updatePeminjamanById = async (id, data) => {
                 buku.tersedia = 'tersedia';
             }
         }
+        return updated;
     } catch (error) {
         throw new Error(`Error updating peminjaman: ${error.message}`);
     }
