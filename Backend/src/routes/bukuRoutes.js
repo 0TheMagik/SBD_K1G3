@@ -55,4 +55,31 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+router.get('/popular', async (req, res) => {
+    try {
+        const popularBooks = await Buku.find().sort({ count: -1 }).limit(10); // Sort by count (descending) and limit to 10
+        res.status(200).json(popularBooks);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.get('/random', async (req, res) => {
+    try {
+        const randomBooks = await Buku.aggregate([{ $sample: { size: 10 } }]); // Fetch 10 random books
+        res.status(200).json(randomBooks);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.get('/terbaru', async (req, res) => {
+    try {
+        const terbaruBooks = await Buku.find().sort({ _id: -1 }).limit(10); // Sort by creation date (descending) and limit to 10
+        res.status(200).json(terbaruBooks);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;

@@ -7,23 +7,10 @@ import PopularStories from './components/PopularStories';
 import RecommendedStories from './components/RecommendedStories';
 import Genre from './components/Genre';
 import UpdateTerbaru from './components/UpdateTerbaru';
-import KategoriList from './components/KategoriList';
 
 const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [kategoriList, setKategoriList] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/kategori")
-      .then((response) => {
-        setKategoriList(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching kategori data:", error);
-      });
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -45,7 +32,6 @@ const App = () => {
       )}
 
       <div className="container mx-auto p-4 flex flex-col md:flex-row gap-6">
-        <KategoriList kategoriList={kategoriList} />
         
         <div className="flex-1">
           {/* Tags Section */}
