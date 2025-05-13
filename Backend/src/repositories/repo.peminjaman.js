@@ -44,11 +44,11 @@ exports.getPeminjamanById = async (id) => {
 exports.updatePeminjamanById = async (id, data) => {
     try {
         return await Peminjaman.findByIdAndUpdate(id, data, { new: true });
-        if (!peminjaman) {
+        if (!Peminjaman) {
             throw new Error('Peminjaman not found');
         }
-        if(peminjaman.status === 'dikembalikan'){
-            const buku = await Buku.findById(peminjaman.id_buku);
+        if(Peminjaman.status === 'dikembalikan'){
+            const buku = await Buku.findById(Peminjaman.id_buku);
             if (!buku) {
                 throw new Error('Buku not found');
             }
