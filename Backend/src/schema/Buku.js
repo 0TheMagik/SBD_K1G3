@@ -5,7 +5,7 @@ const bukuSchema = new mongoose.Schema({
     penulis: String,
     penerbit: String,
     tahun_terbit: Number,
-    kategori: String,
+    kategori: { type: mongoose.Schema.Types.ObjectId, ref: 'Kategori' },
     jumlah: Number,
     tersedia: {type: String, enum: ['tersedia', 'tidak tersedia'], default: 'tersedia'},
     count: { type: Number, default: 0 }

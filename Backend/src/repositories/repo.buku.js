@@ -45,3 +45,12 @@ exports.deleteBukuById = async (id) => {
         throw new Error(`Error deleting buku: ${error.message}`);
     }
 };
+
+// Get buku by kategori
+exports.getBukuByKategori = async (kategori) => {
+    try {
+        return await Buku.find({ kategori: kategori });
+    } catch (error) {
+        throw new Error(`Error fetching buku by kategori: ${error.message}`);
+    }
+};
