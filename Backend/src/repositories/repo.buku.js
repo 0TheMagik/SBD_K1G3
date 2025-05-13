@@ -67,3 +67,26 @@ exports.findBukuByLeaseCount = async (count) => {
         throw new Error(`Error fetching buku by lease count: ${error.message}`);
     }
 };
+
+// Get buku by title
+exports.getBukuByTitle = async (title) => {
+    try {
+        return await Buku.find({ title: { $regex: title, $options: 'i' } });
+    } catch (error) {
+        throw new Error(`Error fetching buku by title: ${error.message}`);
+    }
+};
+
+// Add book rating
+exports.addBookRating = async (id, rating) => {
+    try {
+        const buku = await Buku.findById(id);
+        if (!buku) {
+            throw new Error('Buku not found');
+        }
+        buku.rating.push(rating);
+        return await buku.save();
+    } catch (error) {
+        throw new Error(`Error adding book rating: ${error.message}`);
+    }
+};
