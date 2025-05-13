@@ -5,11 +5,17 @@ const Buku = require('../schema/Buku');
 exports.createPeminjaman = async (data) => {
     try {
         const peminjaman = new Peminjaman(data);
-        // const buku = await Buku.findById(data.id_buku);
-        // if (!buku) {
-        //     throw new Error('Buku not found');
-        // }
-        // buku.count += 1;
+        const buku = await Buku.findById(data.id_buku);
+        if (!buku) {
+            throw new Error('Buku not found');
+        }
+        if (buku.jumlah <= 0){
+            buku.tersedia = 'tidak tersedia';
+            throw new Error('Buku tidak tersedia');
+        }
+        buku.jumlah -= 1;
+        buku.count += 1;
+
         return await peminjaman.save();
     } catch (error) {
         throw new Error(`Error creating peminjaman: ${error.message}`);
@@ -38,6 +44,19 @@ exports.getPeminjamanById = async (id) => {
 exports.updatePeminjamanById = async (id, data) => {
     try {
         return await Peminjaman.findByIdAndUpdate(id, data, { new: true });
+        if (!peminjaman) {
+            throw new Error('Peminjaman not found');
+        }
+        if(peminjaman.status === 'dikembalikan'){
+            const buku = await Buku.findById(peminjaman.id_buku);
+            if (!buku) {
+                throw new Error('Buku not found');
+            }
+            buku.jumlah += 1;
+            if(buku.jumlah > 0){
+                buku.tersedia = 'tersedia';
+            }
+        }
     } catch (error) {
         throw new Error(`Error updating peminjaman: ${error.message}`);
     }
