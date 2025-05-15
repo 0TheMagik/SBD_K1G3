@@ -16,7 +16,7 @@ app.use(cors());
 
 // Import routes
 const anggotaRoutes = require('./src/routes/anggotaRoutes');
-const bukuRoutes = require('./src/routes/bukuRoutes');
+const bukuRoutes = require('./src/routes/BukuRoutes');
 const kategoriRoutes = require('./src/routes/kategoriRoutes');
 const peminjamanRoutes = require('./src/routes/PeminjamanRoutes');
 const petugasRoutes = require('./src/routes/PetugasRoutes');
