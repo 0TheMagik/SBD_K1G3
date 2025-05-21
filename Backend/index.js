@@ -20,6 +20,7 @@ const bukuRoutes = require('./src/routes/bukuRoutes');
 const kategoriRoutes = require('./src/routes/kategoriRoutes');
 const peminjamanRoutes = require('./src/routes/PeminjamanRoutes');
 const petugasRoutes = require('./src/routes/PetugasRoutes');
+const authRoutes = require('./src/routes/authRoutes');  // Add this line
 
 // Use routes
 app.use('/api/anggota', anggotaRoutes);
@@ -27,6 +28,7 @@ app.use('/api/buku', bukuRoutes);
 app.use('/api/kategori', kategoriRoutes);
 app.use('/api/peminjaman', peminjamanRoutes);
 app.use('/api/petugas', petugasRoutes);
+app.use('/api/auth', authRoutes);  // Add this line
 
 // Start the server
 const PORT = process.env.PORT || 3000;

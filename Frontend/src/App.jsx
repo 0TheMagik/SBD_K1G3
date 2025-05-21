@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
@@ -7,10 +9,26 @@ import PopularStories from './components/PopularStories';
 import RecommendedStories from './components/RecommendedStories';
 import Genre from './components/Genre';
 import UpdateTerbaru from './components/UpdateTerbaru';
+import Login from './components/Login';
+import Register from './components/Register';
+import Profile from './components/Profile';
 
-const App = () => {
+// Protected route component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+};
+
+// Home page component
+const HomePage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { currentUser, logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -19,6 +37,8 @@ const App = () => {
         setIsSidebarOpen={setIsSidebarOpen}
         isSearchOpen={isSearchOpen}
         setIsSearchOpen={setIsSearchOpen}
+        currentUser={currentUser}
+        logout={logout}
       />
       
       <Sidebar isSidebarOpen={isSidebarOpen} />
@@ -32,7 +52,6 @@ const App = () => {
       )}
 
       <div className="container mx-auto p-4 flex flex-col md:flex-row gap-6">
-        
         <div className="flex-1">
           {/* Tags Section */}
           <div className="mb-8">
@@ -54,6 +73,34 @@ const App = () => {
 
       <Footer />
     </div>
+  );
+};
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route 
+          path="/" 
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } 
+        />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </AuthProvider>
   );
 };
 
