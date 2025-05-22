@@ -12,13 +12,27 @@ import UpdateTerbaru from './components/UpdateTerbaru';
 import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
+import PetugasDashboard from './components/Petugas/PetugasDashboard';
+import AdminLogin from './components/Petugas/PetugasLogin';
+import PetugasRegister from './components/Petugas/PetugasRegister';
 
 // Protected route component
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+const ProtectedRoute = ({ children, requiredRole = 'any' }) => {
+  const { currentUser, isAuthenticated } = useAuth();
   
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+  
+  if (requiredRole !== 'any') {
+    const hasRequiredRole = 
+      (requiredRole === 'admin' && currentUser.role === 'admin') ||
+      (requiredRole === 'staff' && ['admin', 'petugas'].includes(currentUser.role)) ||
+      (requiredRole === 'member' && currentUser.role === 'member');
+      
+    if (!hasRequiredRole) {
+      return <Navigate to="/unauthorized" replace />;
+    }
   }
   
   return children;
@@ -76,28 +90,56 @@ const HomePage = () => {
   );
 };
 
+// Unauthorized page component
+const UnauthorizedPage = () => {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h1 className="text-3xl font-bold text-red-600 mb-4">Access Denied</h1>
+      <p className="text-gray-700 mb-6">You don't have permission to access this page.</p>
+      <a href="/" className="px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700">
+        Go to Homepage
+      </a>
+    </div>
+  );
+};
+
 const App = () => {
   return (
     <AuthProvider>
       <Routes>
+        {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        <Route path="/admin-register" element={<PetugasRegister />} />
+
+        {/* Protected routes */}
         <Route 
-          path="/" 
+          path="/petugas/*" 
           element={
-            <ProtectedRoute>
-              <HomePage />
+            <ProtectedRoute requiredRole="staff">
+              <PetugasDashboard />
             </ProtectedRoute>
           } 
         />
+        
+        <Route 
+          path="/" 
+          element={
+            <HomePage />
+          } 
+        />
+        
         <Route 
           path="/profile" 
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="member">
               <Profile />
             </ProtectedRoute>
           } 
         />
+        
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </AuthProvider>
