@@ -86,4 +86,17 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// GET top rated books
+router.get('/top-rated', async (req, res) => {
+    try {
+        const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+        const minRatings = req.query.minRatings ? parseInt(req.query.minRatings) : 3;
+        
+        const topRatedBooks = await bukuRepo.getTopRatedBooks(limit, minRatings);
+        res.status(200).json(topRatedBooks);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;

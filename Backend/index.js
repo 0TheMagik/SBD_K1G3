@@ -15,6 +15,7 @@ const peminjamanRoutes = require('./src/routes/PeminjamanRoutes');
 const petugasRoutes = require('./src/routes/PetugasRoutes');
 const authRoutes = require('./src/routes/authRoutes');
 const uploadRoutes = require('./src/routes/uploadRoutes');
+const ratingRoutes = require('./src/routes/ratingRoutes');
 
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({ limit: '50mb', extended: true }))
@@ -57,6 +58,7 @@ app.use('/api/petugas', authenticateToken, isStaff, petugasRoutes);
 app.use('/api/anggota', authenticateToken, anggotaRoutes);
 app.use('/api/kategori', authenticateToken, kategoriRoutes);
 app.use('/api/peminjaman', authenticateToken, peminjamanRoutes);
+app.use('/api/rating', authenticateToken, ratingRoutes); // Rating routes
 
 app.use('/api/upload', uploadRoutes); // Upload route
 
