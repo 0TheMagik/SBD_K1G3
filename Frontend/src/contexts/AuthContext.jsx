@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  //woi
   const login = (userData, token) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
