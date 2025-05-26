@@ -9,7 +9,8 @@ const bukuSchema = new mongoose.Schema({
     jumlah: Number,
     rating: { type: Number, min: 1, max: 5 },
     tersedia: {type: String, enum: ['tersedia', 'tidak tersedia'], default: 'tersedia'},
-    count: { type: Number, default: 0 }
+    count: { type: Number, default: 0 },
+    image_url: { type: String, default: '' },
+    image_public_id: { type: String, default: '' }
 });
-
 module.exports = mongoose.model('Buku', bukuSchema);

@@ -37,9 +37,21 @@ exports.updateBukuById = async (id, data) => {
     }
 };
 
-// Delete buku by ID
+// Add this function to handle deletion of book images when a book is deleted
 exports.deleteBukuById = async (id) => {
     try {
+        // Get the book to check if it has an image to delete
+        const book = await Buku.findById(id);
+        
+        if (book && book.image_public_id) {
+            try {
+                await cloudinary.uploader.destroy(book.image_public_id);
+            } catch (cloudinaryError) {
+                console.error('Error deleting image from Cloudinary:', cloudinaryError);
+                // We'll continue with book deletion even if image deletion fails
+            }
+        }
+        
         return await Buku.findByIdAndDelete(id);
     } catch (error) {
         throw new Error(`Error deleting buku: ${error.message}`);

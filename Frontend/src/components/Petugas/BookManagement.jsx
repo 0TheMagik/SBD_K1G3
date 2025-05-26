@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ImageUploader from '../../contexts/imageUploader';
 
 const BookManagement = ({ setError, setNotification }) => {
   const [books, setBooks] = useState([]);
@@ -15,7 +16,9 @@ const BookManagement = ({ setError, setNotification }) => {
     tahun_terbit: '',
     kategori: '',
     jumlah: 1,
-    tersedia: 'tersedia'
+    tersedia: 'tersedia',
+    image_url: '',
+    image_public_id: ''
   });
 
   // Fetch books and categories
@@ -52,6 +55,15 @@ const BookManagement = ({ setError, setNotification }) => {
     setBookData({
       ...bookData,
       [name]: type === 'number' ? parseInt(value) : value
+    });
+  };
+
+  // Handle image upload
+  const handleImageUpload = (imageData) => {
+    setBookData({
+      ...bookData,
+      image_url: imageData.url,
+      image_public_id: imageData.publicId
     });
   };
 
@@ -127,7 +139,9 @@ const BookManagement = ({ setError, setNotification }) => {
       tahun_terbit: '',
       kategori: '',
       jumlah: 1,
-      tersedia: 'tersedia'
+      tersedia: 'tersedia',
+      image_url: '',
+      image_public_id: ''
     });
     setIsEditing(false);
     setShowForm(false);
@@ -223,6 +237,25 @@ const BookManagement = ({ setError, setNotification }) => {
                   min="0"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Status</label>
+                <select
+                  name="tersedia"
+                  value={bookData.tersedia}
+                  onChange={handleChange}
+                  className="w-full border p-2 rounded"
+                >
+                  <option value="tersedia">Available</option>
+                  <option value="tidak tersedia">Not Available</option>
+                </select>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium mb-1">Book Cover</label>
+                <ImageUploader 
+                  onImageUpload={handleImageUpload} 
+                  currentImage={bookData.image_url} 
+                />
+              </div>
             </div>
             <div className="mt-4 flex justify-end space-x-2">
               <button 
@@ -249,6 +282,7 @@ const BookManagement = ({ setError, setNotification }) => {
         <table className="min-w-full bg-white border">
           <thead>
             <tr className="bg-gray-100">
+              <th className="py-2 px-3 text-left">Cover</th>
               <th className="py-2 px-3 text-left">Title</th>
               <th className="py-2 px-3 text-left">Author</th>
               <th className="py-2 px-3 text-left">Year</th>
@@ -260,6 +294,21 @@ const BookManagement = ({ setError, setNotification }) => {
           <tbody>
             {books.map(book => (
               <tr key={book._id} className="border-t">
+                <td className="py-2 px-3">
+                  {book.image_url ? (
+                    <img 
+                      src={book.image_url} 
+                      alt={book.judul} 
+                      className="w-14 h-20 object-cover rounded"
+                    />
+                  ) : (
+                    <div className="w-14 h-20 bg-gray-200 flex items-center justify-center rounded">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                </td>
                 <td className="py-2 px-3">{book.judul}</td>
                 <td className="py-2 px-3">{book.penulis}</td>
                 <td className="py-2 px-3">{book.tahun_terbit}</td>
@@ -270,7 +319,7 @@ const BookManagement = ({ setError, setNotification }) => {
                       ? 'bg-green-100 text-green-800' 
                       : 'bg-red-100 text-red-800'
                   }`}>
-                    {book.tersedia}
+                    {book.tersedia === 'tersedia' ? 'Available' : 'Not Available'}
                   </span>
                 </td>
                 <td className="py-2 px-3 text-right">
@@ -291,7 +340,7 @@ const BookManagement = ({ setError, setNotification }) => {
             ))}
             {books.length === 0 && (
               <tr>
-                <td colSpan="6" className="py-4 text-center text-gray-500">
+                <td colSpan="7" className="py-4 text-center text-gray-500">
                   No books found. Add some books to get started.
                 </td>
               </tr>
