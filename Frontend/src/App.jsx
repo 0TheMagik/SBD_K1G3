@@ -17,7 +17,7 @@ import AdminLogin from './components/Petugas/PetugasLogin';
 import PetugasRegister from './components/Petugas/PetugasRegister';
 import CategoryPage from './components/CategoryPage';
 import AvailableBooks from "./components/AvailableBooks";
-import AvailableBooksPage from "./components/AvableBooksPage";
+import AvailableBooksPage from "./components/AvailableBooksPage";
 // Protected route component
 const ProtectedRoute = ({ children, requiredRole = 'any' }) => {
   const { currentUser, isAuthenticated } = useAuth();
@@ -117,7 +117,7 @@ const App = () => {
         <Route path="/admin-register" element={<PetugasRegister />} />
 
         <Route path="/category/:categoryName" element={<CategoryPage />} />
-        <Route path="/available-books" element={<AvailableBooks />} />
+        <Route path="/available-books" element={<AvailableBooksPage />} />
         {/* Protected routes */}
         <Route 
           path="/petugas/*" 
