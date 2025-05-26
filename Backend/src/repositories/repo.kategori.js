@@ -45,3 +45,14 @@ exports.deleteKategoriById = async (id) => {
         throw new Error(`Error deleting kategori: ${error.message}`);
     }
 };
+
+exports.getKategoriByName = async (name) => {
+    try {
+        // Case insensitive search
+        return await Kategori.findOne({ 
+            nama_kategori: { $regex: new RegExp('^' + name + '$', 'i') } 
+        });
+    } catch (error) {
+        throw new Error(`Error fetching kategori by name: ${error.message}`);
+    }
+};

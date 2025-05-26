@@ -28,6 +28,14 @@ exports.getBukuById = async (id) => {
     }
 };
 
+exports.getBukuByIds = async (ids) => {
+    try {
+        return await Buku.find({ _id: { $in: ids } });
+    } catch (error) {
+        throw new Error(`Error fetching books by IDs: ${error.message}`);
+    }
+};
+
 // Update buku by ID
 exports.updateBukuById = async (id, data) => {
     try {

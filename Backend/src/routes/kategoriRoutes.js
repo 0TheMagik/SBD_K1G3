@@ -12,6 +12,16 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Public endpoint to get all categories without authentication
+router.get('/public', async (req, res) => {
+    try {
+        const kategoriList = await kategoriRepo.getAllKategori();
+        res.status(200).json(kategoriList);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // GET a single kategori by ID
 router.get('/:id', async (req, res) => {
     try {
@@ -54,5 +64,6 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 module.exports = router;

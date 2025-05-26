@@ -15,7 +15,9 @@ import Profile from './components/Profile';
 import PetugasDashboard from './components/Petugas/PetugasDashboard';
 import AdminLogin from './components/Petugas/PetugasLogin';
 import PetugasRegister from './components/Petugas/PetugasRegister';
-
+import CategoryPage from './components/CategoryPage';
+import AvailableBooks from "./components/AvailableBooks";
+import AvailableBooksPage from "./components/AvableBooksPage";
 // Protected route component
 const ProtectedRoute = ({ children, requiredRole = 'any' }) => {
   const { currentUser, isAuthenticated } = useAuth();
@@ -38,7 +40,6 @@ const ProtectedRoute = ({ children, requiredRole = 'any' }) => {
   return children;
 };
 
-// Home page component
 const HomePage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -54,7 +55,6 @@ const HomePage = () => {
         currentUser={currentUser}
         logout={logout}
       />
-      
       <Sidebar isSidebarOpen={isSidebarOpen} />
 
       {/* Overlay when sidebar is open */}
@@ -73,6 +73,8 @@ const HomePage = () => {
             <div className="border-b-2 border-purple-200 w-24 mb-6"></div>
           </div>
 
+          {/* Add the AvailableBooks component here, before PopularStories */}
+          <AvailableBooks />
           <PopularStories />
           <RecommendedStories />
         </div>
@@ -114,6 +116,8 @@ const App = () => {
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/admin-register" element={<PetugasRegister />} />
 
+        <Route path="/category/:categoryName" element={<CategoryPage />} />
+        <Route path="/available-books" element={<AvailableBooks />} />
         {/* Protected routes */}
         <Route 
           path="/petugas/*" 

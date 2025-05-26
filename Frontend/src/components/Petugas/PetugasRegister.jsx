@@ -28,9 +28,14 @@ const PetugasRegister = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/admin/register', formData);
-      login(response.data.user, response.data.token);
-      navigate('/petugas');
+      // Only register the user, don't log them in automatically
+      await axios.post('http://localhost:3000/api/auth/admin/register', formData);
+      
+      // Show success message (optional)
+      alert('Registration successful! Please login with your new credentials.');
+      
+      // Navigate to the login page instead of the dashboard
+      navigate('/admin-login');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     } finally {

@@ -16,9 +16,41 @@ router.get('/', async (req, res) => {
 // GET popular books
 router.get('/popular', async (req, res) => {
     try {
-        const popularBooks = await Buku.find().sort({ count: -1 }).limit(10); // Sort by count (descending)
-        res.status(200).json(popularBooks);
+        const limit = req.query.limit ? parseInt(req.query.limit) : 6;
+        
+        // First try to get books from rating collection
+        const Rating = require('../schema/Rating');
+        
+        // Aggregate ratings to get average scores
+        const bookRatings = await Rating.aggregate([
+            { 
+                $group: {
+                    _id: "$book_id",
+                    averageRating: { $avg: "$score" },
+                    ratingCount: { $sum: 1 }
+                }
+            },
+            { $sort: { averageRating: -1, ratingCount: -1 } },
+            { $limit: limit }
+        ]);
+        
+        // Get book details for the top-rated books
+        const bookIds = bookRatings.map(item => item._id);
+        const books = await require('../repositories/repo.buku').getBukuByIds(bookIds);
+        
+        // Combine rating data with book data
+        const booksWithRatings = books.map(book => {
+            const ratingInfo = bookRatings.find(r => r._id.toString() === book._id.toString());
+            return {
+                ...book.toObject(),
+                rating: ratingInfo ? ratingInfo.averageRating : null,
+                ratingCount: ratingInfo ? ratingInfo.ratingCount : 0
+            };
+        });
+        
+        res.status(200).json(booksWithRatings);
     } catch (err) {
+        console.error('Error in /popular:', err);
         res.status(500).json({ message: err.message });
     }
 });
@@ -29,6 +61,97 @@ router.get('/random', async (req, res) => {
         const randomBooks = await Buku.aggregate([{ $sample: { size: 10 } }]); // Fetch 10 random books
         res.status(200).json(randomBooks);
     } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.get('/category/:id', async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+        const books = await bukuRepo.getBukuByKategori(categoryId);
+        
+        // Add ratings data if available
+        const Rating = require('../schema/Rating');
+        const bookIds = books.map(book => book._id);
+        
+        // Get ratings for these books
+        const ratings = await Rating.aggregate([
+            { 
+                $match: { book_id: { $in: bookIds } }
+            },
+            { 
+                $group: {
+                    _id: "$book_id",
+                    averageRating: { $avg: "$score" },
+                    ratingCount: { $sum: 1 }
+                }
+            }
+        ]);
+        
+        // Combine book data with ratings
+        const booksWithRatings = books.map(book => {
+            const ratingInfo = ratings.find(r => r._id.toString() === book._id.toString());
+            return {
+                ...book.toObject(),
+                rating: ratingInfo ? ratingInfo.averageRating : null,
+                ratingCount: ratingInfo ? ratingInfo.ratingCount : 0
+            };
+        });
+        
+        res.status(200).json(booksWithRatings);
+    } catch (err) {
+        console.error('Error fetching books by category:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Also add a route to get category by name for user-friendly URLs
+router.get('/category-name/:name', async (req, res) => {
+    try {
+        const categoryName = req.params.name;
+        const kategoriRepo = require('../repositories/repo.kategori');
+        const category = await kategoriRepo.getKategoriByName(categoryName);
+        
+        if (!category) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+        
+        const books = await bukuRepo.getBukuByKategori(category._id);
+        
+        // Add ratings data if available
+        const Rating = require('../schema/Rating');
+        const bookIds = books.map(book => book._id);
+        
+        // Get ratings for these books
+        const ratings = await Rating.aggregate([
+            { 
+                $match: { book_id: { $in: bookIds } }
+            },
+            { 
+                $group: {
+                    _id: "$book_id",
+                    averageRating: { $avg: "$score" },
+                    ratingCount: { $sum: 1 }
+                }
+            }
+        ]);
+        
+        // Combine book data with ratings
+        const booksWithRatings = books.map(book => {
+            const ratingInfo = ratings.find(r => r._id.toString() === book._id.toString());
+            return {
+                ...book.toObject(),
+                rating: ratingInfo ? ratingInfo.averageRating : null,
+                ratingCount: ratingInfo ? ratingInfo.ratingCount : 0
+            };
+        });
+        
+        res.status(200).json({
+            category,
+            books: booksWithRatings
+        });
+    } catch (err) {
+        console.error('Error fetching category by name:', err);
         res.status(500).json({ message: err.message });
     }
 });
@@ -95,6 +218,97 @@ router.get('/top-rated', async (req, res) => {
         const topRatedBooks = await bukuRepo.getTopRatedBooks(limit, minRatings);
         res.status(200).json(topRatedBooks);
     } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.get('/category/:id', async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+        const books = await bukuRepo.getBukuByKategori(categoryId);
+        
+        // Add ratings data if available
+        const Rating = require('../schema/Rating');
+        const bookIds = books.map(book => book._id);
+        
+        // Get ratings for these books
+        const ratings = await Rating.aggregate([
+            { 
+                $match: { book_id: { $in: bookIds } }
+            },
+            { 
+                $group: {
+                    _id: "$book_id",
+                    averageRating: { $avg: "$score" },
+                    ratingCount: { $sum: 1 }
+                }
+            }
+        ]);
+        
+        // Combine book data with ratings
+        const booksWithRatings = books.map(book => {
+            const ratingInfo = ratings.find(r => r._id.toString() === book._id.toString());
+            return {
+                ...book.toObject(),
+                rating: ratingInfo ? ratingInfo.averageRating : null,
+                ratingCount: ratingInfo ? ratingInfo.ratingCount : 0
+            };
+        });
+        
+        res.status(200).json(booksWithRatings);
+    } catch (err) {
+        console.error('Error fetching books by category:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Also add a route to get category by name for user-friendly URLs
+router.get('/category-name/:name', async (req, res) => {
+    try {
+        const categoryName = req.params.name;
+        const kategoriRepo = require('../repositories/repo.kategori');
+        const category = await kategoriRepo.getKategoriByName(categoryName);
+        
+        if (!category) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+        
+        const books = await bukuRepo.getBukuByKategori(category._id);
+        
+        // Add ratings data if available
+        const Rating = require('../schema/Rating');
+        const bookIds = books.map(book => book._id);
+        
+        // Get ratings for these books
+        const ratings = await Rating.aggregate([
+            { 
+                $match: { book_id: { $in: bookIds } }
+            },
+            { 
+                $group: {
+                    _id: "$book_id",
+                    averageRating: { $avg: "$score" },
+                    ratingCount: { $sum: 1 }
+                }
+            }
+        ]);
+        
+        // Combine book data with ratings
+        const booksWithRatings = books.map(book => {
+            const ratingInfo = ratings.find(r => r._id.toString() === book._id.toString());
+            return {
+                ...book.toObject(),
+                rating: ratingInfo ? ratingInfo.averageRating : null,
+                ratingCount: ratingInfo ? ratingInfo.ratingCount : 0
+            };
+        });
+        
+        res.status(200).json({
+            category,
+            books: booksWithRatings
+        });
+    } catch (err) {
+        console.error('Error fetching category by name:', err);
         res.status(500).json({ message: err.message });
     }
 });
