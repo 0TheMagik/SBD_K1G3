@@ -5,7 +5,7 @@ const peminjamanSchema = new mongoose.Schema({
     id_buku: { type: mongoose.Schema.Types.ObjectId, ref: 'Buku' },
     tanggal_pinjam: { type: Date, default: Date.now },
     tanggal_kembali: Date,
-    status: { type: String, enum: ['dipinjam', 'dikembalikan'], default: 'dipinjam' }
+    status: { type: String, enum: [ 'requested', 'approved', 'dipinjam', 'dikembalikan'], default: 'dipinjam' }
 });
 
 module.exports = mongoose.model('Peminjaman', peminjamanSchema);
