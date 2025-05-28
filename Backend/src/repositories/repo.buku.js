@@ -22,7 +22,7 @@ exports.getAllBuku = async () => {
 // Get buku by ID
 exports.getBukuById = async (id) => {
     try {
-        return await Buku.findById(id);
+        return await Buku.findById(id).populate('kategori', 'nama_kategori');
     } catch (error) {
         throw new Error(`Error fetching buku by ID: ${error.message}`);
     }
