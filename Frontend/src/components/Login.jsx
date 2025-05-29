@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login: authLogin } = useAuth();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
+    email: '',    // Keep as email as requested
     password: ''
   });
   const [error, setError] = useState('');
@@ -28,18 +27,20 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', formData);
-      setSuccess('Login successful!');
+      const result = await login(formData.email, formData.password);
       
-      // Use auth context to save user and token
-      authLogin(response.data.user, response.data.token);
-      
-      // Redirect to home
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
+      if (result.success) {
+        setSuccess('Login successful!');
+        // Redirect to home
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      } else {
+        setError(result.message || 'Login failed. Please check your credentials.');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError('An unexpected error occurred. Please try again later.');
+      console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }

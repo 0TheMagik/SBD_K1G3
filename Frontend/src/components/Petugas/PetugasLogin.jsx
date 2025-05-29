@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const PetugasLogin = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { staffLogin } = useAuth();  // Use staffLogin instead of login
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -26,11 +26,18 @@ const PetugasLogin = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/admin/login', formData);
-      login(response.data.user, response.data.token);
-      navigate('/petugas');
+      // Call staffLogin method instead of directly using axios here
+      const result = await staffLogin(formData.username, formData.password);
+      
+      if (result.success) {
+        // Redirect to staff dashboard on success
+        navigate('/petugas');
+      } else {
+        setError(result.message || 'Login failed. Please check your credentials.');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      console.error('Login error:', err);
+      setError('An unexpected error occurred. Please try again later.');
     } finally {
       setLoading(false);
     }
