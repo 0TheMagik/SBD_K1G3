@@ -26,4 +26,33 @@ PeminjamanBuku adalah Tempat untuk melihat dan meminjam buku yang ada pada sebua
 ---
 
 ### 💻 Tutorial
-
+Buat file `.env` pada Directory Backend/src/ 
+```
+SBD-K1G3/  
+├── Backend/  
+│   ├── src/
+│   │   ├── repositories/
+│   │   ├── routes/
+│   │   ├── middleware/
+│   │   └── schema/
+│   ├── package.json
+|   ├── .env
+|   ├── .dockerignore
+|   ├── dockerfile
+│   └── ...
+├── Frontend/
+│   ├── src/
+│   │   ├── utils/
+│   │   ├── components/
+│   │   ├── assets/
+│   │   ├── contexts/
+|   |   ├── App.css
+|   |   ├── App.jsx
+|   |   ├── index.css
+|   |   └── main.jsx
+│   ├── package.json
+|   ├── .dockerignore
+|   ├── dockerfile
+│   └── ...
+└── README.md
+```
