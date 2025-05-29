@@ -19,6 +19,8 @@ import CategoryPage from './components/CategoryPage';
 import AvailableBooks from "./components/AvailableBooks";
 import AvailableBooksPage from "./components/AvailableBooksPage";
 import BookDetailPage from "./components/BookDetailPage";
+import UpdatesPage from "./components/UpdatesPage";
+
 // Protected route component
 const ProtectedRoute = ({ children, requiredRole = 'any' }) => {
   const { currentUser, isAuthenticated } = useAuth();
@@ -116,10 +118,10 @@ const App = () => {
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/admin-register" element={<PetugasRegister />} />
-
         <Route path="/category/:categoryName" element={<CategoryPage />} />
         <Route path="/available-books" element={<AvailableBooksPage />} />
         <Route path="/book/:id" element={<BookDetailPage />} />
+        <Route path="/updates" element={<UpdatesPage />} />
         {/* Protected routes */}
         <Route 
           path="/petugas/*" 
