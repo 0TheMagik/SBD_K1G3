@@ -69,7 +69,7 @@ app.use('/api/petugas', authenticateToken, isStaff, petugasRoutes);
 app.use('/api/anggota', authenticateToken, anggotaRoutes);
 app.use('/api/kategori', authenticateToken, kategoriRoutes);
 app.use('/api/peminjaman', authenticateToken, peminjamanRoutes);
-app.use('/api/rating', authenticateToken, ratingRoutes); // Rating routes
+app.use('/api/rating', ratingRoutes); // no authentication needed for ratings
 
 app.use('/api/upload', uploadRoutes); // Upload route
 

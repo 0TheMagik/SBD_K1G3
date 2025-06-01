@@ -1,4 +1,5 @@
 const Rating = require('../schema/Rating');
+const mongoose = require('mongoose');
 
 // Create a new rating
 exports.createRating = async (data) => {
@@ -41,3 +42,27 @@ exports.updateRatingById = async (id, data) => {
         throw new Error(`Error updating rating by ID: ${error.message}`);
     }
 }
+
+// Get average rating for a book
+exports.getAverageRating = async (bookId) => {
+    try {
+        const result = await Rating.aggregate([
+            { $match: { book_id: new mongoose.Types.ObjectId(bookId) } },
+            {
+                $group: {
+                    _id: '$book_id',
+                    averageScore: { $avg: '$score' },
+                    totalRatings: { $sum: 1 }
+                }
+            }
+        ]);
+
+        if (result.length === 0) {
+            return result.json({ averageScore: 0, totalRatings: 0 });
+        }
+
+        return result[0];
+    } catch (err) {
+        throw new Error(`Error calculating average rating: ${err.message}`);
+    }
+};

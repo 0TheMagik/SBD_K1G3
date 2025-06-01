@@ -13,21 +13,15 @@ const BookDetailPage = () => {
     const [categoryName, setCategoryName] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [averageRating, setAverageRating] = useState(null);
     const { currentUser, logout } = useAuth();
+
 
     useEffect(() => {
         const fetchBook = async () => {
             try {
                 const res = await axios.get(`http://localhost:3000/api/buku/${id}`);
                 setBook(res.data);
-
-                // // Fetch category name
-                // if (res.data.kategori) {
-                //     const catRes = await axios.get(`http://localhost:3000/api/kategori/${res.data.kategori}`);
-                //     setCategoryName(catRes.data.nama_kategori);
-                // } else {
-                //     setCategoryName('Uncategorized');
-                // }
 
             } catch (err) {
                 console.error(err);
@@ -36,8 +30,17 @@ const BookDetailPage = () => {
                 setLoading(false);
             }
         };
+        const fetchAverageRating = async () => {
+            try {
+                const res = await axios.get(`http://localhost:3000/api/rating/average/${id}`);
+                setAverageRating(res.data);
+            } catch (err) {
+                console.error('Failed to load average rating:', err);
+            }
+        };
 
         fetchBook();
+        fetchAverageRating();
     }, [id]);
 
     if (loading) return <div className="p-10 text-center text-gray-500">Loading...</div>;
@@ -81,13 +84,22 @@ const BookDetailPage = () => {
 
                         {/* Rating */}
                         <div className="flex items-center gap-2">
-                            <StarRating rating={book.rating?.value || 0} />
+                            <StarRating rating={averageRating.averageScore || 0} />
                             <span className="text-sm text-gray-500">
-                                {book.rating?.value ? `${book.rating.value.toFixed(1)}/5` : 'No ratings'}
+                                {averageRating.averageScore ? `${averageRating.averageScore}/5` : 'No ratings'}
                             </span>
                         </div>
 
                         <Link to="/" className="text-blue-600 hover:underline">← Back to books</Link>
+                        <div className="bottom-6 right-6">
+                            <Link
+                                to={`/rating/${book._id}`}
+                                className="bg-blue-600 text-white px-4 py-2 rounded-full shadow hover:bg-blue-700 transition"
+                            >
+                                Beri Rating
+                            </Link>
+                        </div>
+
                     </div>
                 </div>
             </main>

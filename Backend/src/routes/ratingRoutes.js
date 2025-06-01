@@ -23,6 +23,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/review', async (req, res) => {
     try {
+        console.log('Received rating data:', req.body);
         const newRating = await ratingRepository.createRating(req.body);
         res.status(201).json(newRating);
     } catch (error) {
@@ -37,6 +38,15 @@ router.put('/review/:id', async (req, res) => {
         res.status(200).json(updatedRating);
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+});
+
+router.get('/average/:bookId', async (req, res) => {
+    try {
+        const averageRating = await ratingRepository.getAverageRating(req.params.bookId);
+        res.status(200).json(averageRating);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 

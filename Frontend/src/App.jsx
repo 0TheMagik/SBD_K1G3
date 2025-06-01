@@ -20,6 +20,7 @@ import AvailableBooks from "./components/AvailableBooks";
 import AvailableBooksPage from "./components/AvailableBooksPage";
 import BookDetailPage from "./components/BookDetailPage";
 import UpdatesPage from "./components/UpdatesPage";
+import RatingPage from "./components/BookRatingPage";
 
 // Protected route component
 const ProtectedRoute = ({ children, requiredRole = 'any' }) => {
@@ -147,6 +148,16 @@ const App = () => {
             </ProtectedRoute>
           } 
         />
+
+        <Route 
+          path="/rating/:id" 
+          element={
+            <ProtectedRoute requiredRole="member">
+              <RatingPage />
+            </ProtectedRoute>
+          } 
+        />
+
         
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
