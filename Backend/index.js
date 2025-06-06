@@ -62,6 +62,9 @@ app.use('/api/buku/popular', bukuRoutes);
 app.use('/api/buku/random', bukuRoutes);
 app.use('/api/buku/available', bukuRoutes);
 app.use('/api/buku', bukuRoutes); // For GET requests only
+app.use('/api/public/popular-books', (req, res) => {
+  require(bukuRoutes).popularBooks(req, res);
+});
 
 // Protected routes for staff only
 app.use('/api/petugas', authenticateToken, isStaff, petugasRoutes);

@@ -21,6 +21,7 @@ import AvailableBooksPage from "./components/AvailableBooksPage";
 import BookDetailPage from "./components/BookDetailPage";
 import UpdatesPage from "./components/UpdatesPage";
 import RatingPage from "./components/BookRatingPage";
+import RankingPage from "./components/RankingPage";
 
 // Protected route component
 const ProtectedRoute = ({ children, requiredRole = 'any' }) => {
@@ -123,6 +124,7 @@ const App = () => {
         <Route path="/available-books" element={<AvailableBooksPage />} />
         <Route path="/book/:id" element={<BookDetailPage />} />
         <Route path="/updates" element={<UpdatesPage />} />
+        <Route path="/ranking" element={<RankingPage />} />
         {/* Protected routes */}
         <Route 
           path="/petugas/*" 

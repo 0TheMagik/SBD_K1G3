@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bukuRepo = require('../repositories/repo.buku'); // Import the repository
 const Buku = require('../schema/Buku'); // Import the Buku schema
-
+const Rating = require('../schema/Rating'); // Import the Rating schema
+const mongoose = require('mongoose');
 // GET all buku
 router.get('/', async (req, res) => {
     try {
@@ -51,6 +52,52 @@ router.get('/popular', async (req, res) => {
         res.status(200).json(booksWithRatings);
     } catch (err) {
         console.error('Error in /popular:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// GET popular books - public accessible endpoint
+router.get('/popular-books', async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 10;
+        
+        // Get books with ratings, sorted by average rating
+        const bookRatings = await Rating.aggregate([
+            { 
+                $group: {
+                    _id: "$book_id",
+                    averageRating: { $avg: "$score" },
+                    ratingCount: { $sum: 1 }
+                }
+            },
+            { $sort: { averageRating: -1, ratingCount: -1 } },
+            { $limit: limit }
+        ]);
+        
+        // Get book details for the top-rated books
+        const bookIds = bookRatings.map(item => item._id);
+        
+        const books = await Buku.find({
+            _id: { $in: bookIds.map(id => new mongoose.Types.ObjectId(id)) }
+        });
+        
+        // Combine rating data with book data
+        const booksWithRatings = books.map(book => {
+            const ratingInfo = bookRatings.find(r => r._id.toString() === book._id.toString());
+            
+            return {
+                ...book.toObject(),
+                rating: ratingInfo ? ratingInfo.averageRating : null,
+                ratingCount: ratingInfo ? ratingInfo.ratingCount : 0
+            };
+        });
+        
+        // Sort again to maintain the right order
+        booksWithRatings.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        
+        res.status(200).json(booksWithRatings);
+    } catch (err) {
+        console.error('Error in /popular-books:', err);
         res.status(500).json({ message: err.message });
     }
 });
