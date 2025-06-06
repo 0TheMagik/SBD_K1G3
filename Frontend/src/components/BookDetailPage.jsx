@@ -36,6 +36,8 @@ const BookDetailPage = () => {
                 setAverageRating(res.data);
             } catch (err) {
                 console.error('Failed to load average rating:', err);
+                // Set a default rating object with zero values instead of leaving it null
+                setAverageRating({ averageScore: 0, totalRatings: 0 });
             }
         };
 
@@ -84,9 +86,11 @@ const BookDetailPage = () => {
 
                         {/* Rating */}
                         <div className="flex items-center gap-2">
-                            <StarRating rating={averageRating.averageScore || 0} />
+                            <StarRating rating={averageRating?.averageScore || 0} />
                             <span className="text-sm text-gray-500">
-                                {averageRating.averageScore ? `${averageRating.averageScore}/5` : 'No ratings'}
+                                {averageRating?.averageScore 
+                                    ? `${averageRating.averageScore}/5` 
+                                    : 'No ratings'}
                             </span>
                         </div>
 

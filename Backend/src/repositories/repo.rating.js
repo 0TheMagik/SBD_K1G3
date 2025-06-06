@@ -58,7 +58,8 @@ exports.getAverageRating = async (bookId) => {
         ]);
 
         if (result.length === 0) {
-            return result.json({ averageScore: 0, totalRatings: 0 });
+            // Return an object directly instead of trying to call json()
+            return { averageScore: 0, totalRatings: 0 };
         }
 
         return result[0];

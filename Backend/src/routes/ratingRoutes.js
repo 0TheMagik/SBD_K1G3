@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ratingRepository = require('../repositories/repo.rating');
-
+const { authenticateToken } = require('../middleware/authMiddleware');
 router.get('/', async (req, res) => {
     try {
         const ratings = await ratingRepository.getAllRatings();
@@ -23,10 +23,17 @@ router.get('/:id', async (req, res) => {
 
 router.post('/review', async (req, res) => {
     try {
-        console.log('Received rating data:', req.body);
+        console.log("Rating request received (auth bypassed for testing):", req.body);
+        
+        // Ensure we have the required fields
+        if (!req.body.reviewer_id || !req.body.book_id || !req.body.score) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+        
         const newRating = await ratingRepository.createRating(req.body);
         res.status(201).json(newRating);
     } catch (error) {
+        console.error('Rating error:', error);
         res.status(400).json({ message: error.message });
     }
 });

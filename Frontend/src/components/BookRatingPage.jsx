@@ -12,7 +12,6 @@ const RatingPage = () => {
     const [score, setScore] = useState(5);
     const [comment, setComment] = useState('');
     const [error, setError] = useState('');
-    const token = localStorage.getItem('token'); // Ambil token dari localStorage
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -20,18 +19,36 @@ const RatingPage = () => {
         setError('');
 
         try {
-            await axios.post('http://localhost:3000/api/rating/review', {
+            console.log("Sending rating data (auth bypassed):", {
                 reviewer_id: currentUser._id,
                 book_id: id,
                 score,
-                Comment
-            }
-        );
+                Comment: comment
+            });
+            
+            // TEMPORARY: Remove authentication header for testing
+            await axios.post(
+                'http://localhost:3000/api/rating/review', 
+                {
+                    reviewer_id: currentUser._id,
+                    book_id: id,
+                    score,
+                    Comment: comment
+                }
+                // Removed the headers object with Authorization
+            );
 
-            navigate(`/buku/${id}`); // kembali ke detail buku
+            navigate(`/book/${id}`);
         } catch (err) {
-            setError('Gagal mengirim rating.');
-            console.error(err);
+            console.error('Rating error full details:', err);
+            if (err.response) {
+                console.log('Error response data:', err.response.data);
+                console.log('Error response status:', err.response.status);
+                console.log('Error response headers:', err.response.headers);
+                setError(`Error: ${err.response.status} - ${err.response.data.message || 'Unknown error'}`);
+            } else {
+                setError('Gagal mengirim rating. ' + (err.message || ''));
+            }
         }
     };
 
