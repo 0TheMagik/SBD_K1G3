@@ -60,8 +60,8 @@ SBD-K1G3/
 #### 🔰 Isi `.env` dengan para meter berikut
 ```
 MONGODB_URI= [Isi bagian ini]
-JWT_SECRET= [Isi bagian ini]
-
+JWT_SECRET= secret
+PORT=3000
 CLOUDINARY_CLOUD_NAME= [Isi bagian ini]
 CLOUDINARY_API_KEY= [Isi bagian ini]
 CLOUDINARY_API_SECRET= [Isi bagian ini]
