@@ -1,0 +1,33 @@
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  perpus_backend:
+    build: ./Backend
+    container_name: perpus_backend
+    environment:
+      MONGO_URI: mongodb://admin:secret@mongodb:27017
+    depends_on:
+      - mongodb
+    ports:
+      - "3000:3000"  # Expose backend API on host port 3000
+
+  perpus_frontend:
+    build: ./Frontend
+    container_name: perpus_frontend
+    depends_on:
+      - perpus_backend
+    ports:
+      - "5173:5173"  # Expose frontend (e.g., React app) on host port 5173
+
+volumes:
+  mongo_data:

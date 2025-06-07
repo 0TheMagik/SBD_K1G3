@@ -12,5 +12,7 @@ const bukuSchema = new mongoose.Schema({
     count: { type: Number, default: 0 },
     image_url: { type: String, default: '' },
     image_public_id: { type: String, default: '' }
+}, {
+    timestamps: true
 });
 module.exports = mongoose.model('Buku', bukuSchema);
