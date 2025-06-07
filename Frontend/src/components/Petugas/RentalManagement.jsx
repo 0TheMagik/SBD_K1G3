@@ -16,7 +16,6 @@ const RentalManagement = ({ setError, setNotification }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
       const [rentalsRes, membersRes, booksRes] = await Promise.all([
         axios.get('http://localhost:3000/api/peminjaman', {
           headers: { Authorization: `Bearer ${token}` }
@@ -28,7 +27,6 @@ const RentalManagement = ({ setError, setNotification }) => {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
-      
       setRentals(rentalsRes.data);
       setMembers(membersRes.data);
       setBooks(booksRes.data);
@@ -63,43 +61,34 @@ const RentalManagement = ({ setError, setNotification }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
       const rental = rentals.find(r => r._id === id);
       if (!rental) {
         setError('Peminjaman tidak ditemukan');
         return;
       }
-      
-      // Update the book availability status
       const book = books.find(b => b._id === rental.id_buku);
       if (book && book.jumlah <= 0) {
         setError('Buku tidak tersedia');
         setLoading(false);
         return;
       }
-      
-      // Calculate return date (14 days from now)
       const returnDate = new Date();
       returnDate.setDate(returnDate.getDate() + 14);
-      
-      await axios.put(`http://localhost:3000/api/peminjaman/${id}`, 
-        { 
+      await axios.put(`http://localhost:3000/api/peminjaman/${id}`,
+        {
           status: 'dipinjam',
           tanggal_pinjam: new Date(),
           tanggal_kembali: returnDate
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
-      // Update book availability
-      await axios.put(`http://localhost:3000/api/buku/${rental.id_buku}`, 
-        { 
+      await axios.put(`http://localhost:3000/api/buku/${rental.id_buku}`,
+        {
           jumlah: book.jumlah - 1,
           tersedia: book.jumlah - 1 <= 0 ? 'tidak tersedia' : 'tersedia'
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
       setNotification('Permintaan peminjaman berhasil disetujui');
       fetchData();
     } catch (err) {
@@ -112,15 +101,12 @@ const RentalManagement = ({ setError, setNotification }) => {
 
   const rejectRequest = async (id) => {
     if (!window.confirm('Anda yakin ingin menolak permintaan ini?')) return;
-    
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
       await axios.delete(`http://localhost:3000/api/peminjaman/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
       setNotification('Permintaan peminjaman ditolak');
       fetchData();
     } catch (err) {
@@ -135,33 +121,28 @@ const RentalManagement = ({ setError, setNotification }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
       const rental = rentals.find(r => r._id === id);
       if (!rental) {
         setError('Peminjaman tidak ditemukan');
         return;
       }
-      
-      await axios.put(`http://localhost:3000/api/peminjaman/${id}`, 
-        { 
+      await axios.put(`http://localhost:3000/api/peminjaman/${id}`,
+        {
           status: 'dikembalikan',
           tanggal_kembali: new Date()
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
-      // Update book availability
       const book = books.find(b => b._id === rental.id_buku);
       if (book) {
-        await axios.put(`http://localhost:3000/api/buku/${rental.id_buku}`, 
-          { 
+        await axios.put(`http://localhost:3000/api/buku/${rental.id_buku}`,
+          {
             jumlah: book.jumlah + 1,
             tersedia: 'tersedia'
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
-      
       setNotification('Pengembalian buku berhasil diproses');
       fetchData();
     } catch (err) {
@@ -171,14 +152,20 @@ const RentalManagement = ({ setError, setNotification }) => {
       setLoading(false);
     }
   };
-  
+
+  // Sort: yang status !== 'dikembalikan' di atas, 'dikembalikan' di bawah
   const getFilteredRentals = () => {
-    if (statusFilter === 'all') return rentals;
-    return rentals.filter(rental => rental.status === statusFilter);
+    let filtered = rentals;
+    if (statusFilter !== 'all') {
+      filtered = rentals.filter(rental => rental.status === statusFilter);
+    }
+    const notReturned = filtered.filter(rental => rental.status !== 'dikembalikan');
+    const returned = filtered.filter(rental => rental.status === 'dikembalikan');
+    return [...notReturned, ...returned];
   };
 
   const getStatusBadgeClass = (status) => {
-    switch(status) {
+    switch (status) {
       case 'requested':
         return 'bg-yellow-100 text-yellow-800';
       case 'approved':
@@ -191,9 +178,9 @@ const RentalManagement = ({ setError, setNotification }) => {
         return 'bg-gray-100 text-gray-800';
     }
   };
-  
+
   const getStatusLabel = (status) => {
-    switch(status) {
+    switch (status) {
       case 'requested':
         return 'Diminta';
       case 'approved':
@@ -220,7 +207,7 @@ const RentalManagement = ({ setError, setNotification }) => {
         <h2 className="text-xl font-bold">Kelola Peminjaman</h2>
         <div>
           <label className="mr-2 text-sm font-medium">Filter Status:</label>
-          <select 
+          <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="border rounded px-3 py-1"
@@ -232,7 +219,7 @@ const RentalManagement = ({ setError, setNotification }) => {
           </select>
         </div>
       </div>
-      
+
       {rentals.length === 0 ? (
         <div className="text-center py-10 bg-gray-50 rounded border">
           <p className="text-gray-500">Belum ada data peminjaman</p>
@@ -265,14 +252,14 @@ const RentalManagement = ({ setError, setNotification }) => {
                   <td className="py-3 px-3 text-right">
                     {rental.status === 'requested' && (
                       <>
-                        <button 
-                          onClick={() => approveRequest(rental._id)} 
+                        <button
+                          onClick={() => approveRequest(rental._id)}
                           className="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1 rounded mr-1"
                         >
                           Terima
                         </button>
-                        <button 
-                          onClick={() => rejectRequest(rental._id)} 
+                        <button
+                          onClick={() => rejectRequest(rental._id)}
                           className="bg-red-600 hover:bg-red-700 text-white text-xs px-2 py-1 rounded"
                         >
                           Tolak
@@ -280,8 +267,8 @@ const RentalManagement = ({ setError, setNotification }) => {
                       </>
                     )}
                     {rental.status === 'dipinjam' && (
-                      <button 
-                        onClick={() => processReturn(rental._id)} 
+                      <button
+                        onClick={() => processReturn(rental._id)}
                         className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1 rounded"
                       >
                         Proses Pengembalian
