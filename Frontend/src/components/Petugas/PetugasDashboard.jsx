@@ -1,10 +1,12 @@
+// ...existing imports...
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import BookManagement from './BookManagement';
 import MemberManagement from './MemberManagement';
 import PetugasManagement from './PetugasManagement';
-import RentalManagement from './RentalManagement'; // Add this import
+import RentalManagement from './RentalManagement';
+import KategoriManagement from './KategoriManagement';
 
 const PetugasDashboard = () => {
   const { currentUser, logout } = useAuth();
@@ -67,7 +69,7 @@ const PetugasDashboard = () => {
       {/* Main content */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          {/* Tabs remain unchanged */}
+          {/* Tabs */}
           <div className="flex border-b">
             <button
               className={`px-6 py-3 font-medium ${
@@ -78,6 +80,17 @@ const PetugasDashboard = () => {
               onClick={() => setActiveTab('books')}
             >
               Kelola Buku
+            </button>
+            {/* Tambahkan tab Kelola Kategori */}
+            <button
+              className={`px-6 py-3 font-medium ${
+                activeTab === 'kategori' 
+                ? 'border-b-2 border-cyan-600 text-cyan-600' 
+                : 'text-gray-600 hover:text-cyan-600'
+              }`}
+              onClick={() => setActiveTab('kategori')}
+            >
+              Kelola Kategori
             </button>
             <button
               className={`px-6 py-3 font-medium ${
@@ -99,8 +112,6 @@ const PetugasDashboard = () => {
             >
               Peminjaman
             </button>
-            
-            {/* Show petugas management tab for all petugas */}
             <button
               className={`px-6 py-3 font-medium ${
                 activeTab === 'staff' 
@@ -113,10 +124,14 @@ const PetugasDashboard = () => {
             </button>
           </div>
 
-          {/* Tab content - Replace placeholder with real component */}
+          {/* Tab content */}
           <div className="p-4">
             {activeTab === 'books' && (
               <BookManagement setError={setError} setNotification={setNotification} />
+            )}
+            {/* Tab content untuk kategori */}
+            {activeTab === 'kategori' && (
+              <KategoriManagement setError={setError} setNotification={setNotification} />
             )}
             {activeTab === 'members' && (
               <MemberManagement setError={setError} setNotification={setNotification} />
