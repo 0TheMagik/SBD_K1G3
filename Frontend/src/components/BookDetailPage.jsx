@@ -16,13 +16,19 @@ const BookDetailPage = () => {
     const [averageRating, setAverageRating] = useState(null);
     const { currentUser, logout } = useAuth();
 
+    // State for pinjam button
+    const [pinjamLoading, setPinjamLoading] = useState(false);
+    const [pinjamSuccess, setPinjamSuccess] = useState('');
+    const [pinjamError, setPinjamError] = useState('');
+
+    // Ambil token dari localStorage (atau dari context jika ada)
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
         const fetchBook = async () => {
             try {
                 const res = await axios.get(`http://localhost:3000/api/buku/${id}`);
                 setBook(res.data);
-
             } catch (err) {
                 console.error(err);
                 setError('Failed to load book details.');
@@ -36,7 +42,6 @@ const BookDetailPage = () => {
                 setAverageRating(res.data);
             } catch (err) {
                 console.error('Failed to load average rating:', err);
-                // Set a default rating object with zero values instead of leaving it null
                 setAverageRating({ averageScore: 0, totalRatings: 0 });
             }
         };
@@ -44,6 +49,44 @@ const BookDetailPage = () => {
         fetchBook();
         fetchAverageRating();
     }, [id]);
+
+    // Handler for pinjam
+    const handlePinjam = async () => {
+        setPinjamLoading(true);
+        setPinjamError('');
+        setPinjamSuccess('');
+        try {
+            if (!currentUser || !currentUser._id) {
+                setPinjamError('Silakan login untuk meminjam buku.');
+                setPinjamLoading(false);
+                return;
+            }
+            if (!token) {
+                setPinjamError('Token tidak ditemukan. Silakan login ulang.');
+                setPinjamLoading(false);
+                return;
+            }
+            await axios.post(
+                'http://localhost:3000/api/peminjaman',
+                {
+                    id_buku: id,
+                    id_anggota: currentUser._id,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            setPinjamSuccess('Berhasil mengajukan peminjaman!');
+        } catch (err) {
+            setPinjamError(
+                err.response?.data?.message || 'Gagal meminjam buku.'
+            );
+        } finally {
+            setPinjamLoading(false);
+        }
+    };
 
     if (loading) return <div className="p-10 text-center text-gray-500">Loading...</div>;
     if (error) return <div className="p-10 text-center text-red-500">{error}</div>;
@@ -95,15 +138,27 @@ const BookDetailPage = () => {
                         </div>
 
                         <Link to="/" className="text-blue-600 hover:underline">← Back to books</Link>
-                        <div className="bottom-6 right-6">
+                        <div className="flex gap-4 mt-4">
                             <Link
                                 to={`/rating/${book._id}`}
-                                className="bg-blue-600 text-white px-4 py-2 rounded-full shadow hover:bg-blue-700 transition"
+                                className="bg-blue-600 hover:bg-blue-400 text-white px-4 py-2 rounded-full shadow hover:bg-blue-700 transition"
                             >
                                 Beri Rating
                             </Link>
+                            <button
+                                className="bg-blue-600 hover:bg-blue-400 text-white px-4 py-2 rounded-full shadow transition"
+                                onClick={handlePinjam}
+                                disabled={pinjamLoading}
+                            >
+                                {pinjamLoading ? 'Meminjam...' : 'Pinjam'}
+                            </button>
                         </div>
-
+                        {pinjamSuccess && (
+                            <div className="text-green-600 mt-2">{pinjamSuccess}</div>
+                        )}
+                        {pinjamError && (
+                            <div className="text-red-600 mt-2">{pinjamError}</div>
+                        )}
                     </div>
                 </div>
             </main>
