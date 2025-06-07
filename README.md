@@ -57,9 +57,9 @@ SBD-K1G3/
 └── README.md
 ```
 
-#### 🔰 Isi `.env` dengan para meter berikut
+#### 🔰 Isi `.env` dengan parameter berikut
 ```
-MONGODB_URI= [Isi bagian ini]
+MONGODB_URI= mongodb://admin:secret@mongodb:27017
 JWT_SECRET= secret
 PORT=3000
 CLOUDINARY_CLOUD_NAME= [Isi bagian ini]
@@ -67,22 +67,14 @@ CLOUDINARY_API_KEY= [Isi bagian ini]
 CLOUDINARY_API_SECRET= [Isi bagian ini]
 ```
 
-#### 🎨 Masuk ke direktori backend dan build container image lalu run image
+#### 🎨 Pada root direktori jalankan docker compose dengan command berikut
 ```
-cd backend
-
-docker build -t perpus_backend:1.0 .
-
-docker run -p [port untuk access]:[port pada dockerfile (3000)] [image id] 
+docker-compose up --build
 ```
 
-#### 🚀 masuk ke direktori frontend dan build container image
+#### 🚀 Untuk Menghentikan docker yang di jalankan tadi gunakan command berikut
 ```
-cd frontend
-
-docker build -t perpus_frontend:1.0 .
-
-docker run -p [port untuk access]:[port pada dockerfile (5173)] [image id] 
+docker-compose down
 ```
 
 #### 💮 Frontend dan Backend bisa Diakses pada port yang sudah di assigned saat menjalankan image
