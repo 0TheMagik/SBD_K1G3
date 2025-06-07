@@ -149,3 +149,11 @@ exports.getTopRatedBooks = async (limit = 10) => {
         throw new Error(`Error fetching top rated books: ${error.message}`);
     }
 };
+
+exports.getBukuByPenulis = async (penulis) => {
+    try {
+        return await Buku.find({ penulis: penulis });
+    } catch (error) {
+        throw new Error(`Error fetching buku by penulis: ${error.message}`);
+    }
+};
