@@ -71,3 +71,11 @@ exports.deletePeminjamanById = async (id) => {
         throw new Error(`Error deleting peminjaman: ${error.message}`);
     }
 };
+
+exports.getPeminjamanByAnggota = async (id_anggota) => {
+    try {
+        return await Peminjaman.find({ id_anggota }).populate('id_buku');
+    } catch (error) {
+        throw new Error(`Error fetching peminjaman by anggota: ${error.message}`);
+    }
+};

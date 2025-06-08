@@ -42,11 +42,13 @@ const Header = ({
           {/* Desktop Navigation and Search */}
           <div className="hidden md:flex items-center space-x-6">
             <nav className="flex space-x-6">
-                
               <Link to="/updates" className="font-medium text-cyan-950 hover:text-blue-600 transition-colors text-lg px-3 py-2">Updates</Link>
-              <Link to="/ranking"className="font-medium text-cyan-950 hover:text-blue-600 transition-colors text-lg px-3 py-2">Ranking</Link>
+              <Link to="/ranking" className="font-medium text-cyan-950 hover:text-blue-600 transition-colors text-lg px-3 py-2">Ranking</Link>
               <a href="#" className="font-medium text-cyan-950 hover:text-blue-600 transition-colors text-lg px-3 py-2">Creator</a>
               <a href="#" className="font-medium text-cyan-950 hover:text-blue-600 transition-colors text-lg px-3 py-2">Favorited</a>
+              {currentUser && (
+                <Link to="/history" className="font-medium text-cyan-950 hover:text-blue-600 transition-colors text-lg px-3 py-2">History</Link>
+              )}
               <a href="#" className="font-medium text-cyan-950 hover:text-blue-600 transition-colors text-lg px-3 py-2">About Us</a>
             </nav>
             

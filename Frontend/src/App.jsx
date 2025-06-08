@@ -22,6 +22,7 @@ import BookDetailPage from "./components/BookDetailPage";
 import UpdatesPage from "./components/UpdatesPage";
 import RatingPage from "./components/BookRatingPage";
 import RankingPage from "./components/RankingPage";
+import HistoryPage from "./components/History"; 
 
 // Protected route component
 const ProtectedRoute = ({ children, requiredRole = 'any' }) => {
@@ -125,6 +126,7 @@ const App = () => {
         <Route path="/book/:id" element={<BookDetailPage />} />
         <Route path="/updates" element={<UpdatesPage />} />
         <Route path="/ranking" element={<RankingPage />} />
+
         {/* Protected routes */}
         <Route 
           path="/petugas/*" 
@@ -137,9 +139,7 @@ const App = () => {
         
         <Route 
           path="/" 
-          element={
-            <HomePage />
-          } 
+          element={<HomePage />} 
         />
         
         <Route 
@@ -160,7 +160,15 @@ const App = () => {
           } 
         />
 
-        
+        <Route 
+          path="/history" 
+          element={
+            <ProtectedRoute requiredRole="member">
+              <HistoryPage />
+            </ProtectedRoute>
+          } 
+        />
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </AuthProvider>

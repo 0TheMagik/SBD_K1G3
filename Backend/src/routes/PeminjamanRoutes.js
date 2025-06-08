@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Peminjaman = require('../schema/Peminjaman');
 const Buku = require('../schema/Buku');
+const peminjamanRepo = require('../repositories/repo.peminjaman');
 const { authenticateToken } = require('../middleware/authMiddleware');
 
 // Apply authentication to all routes
@@ -12,6 +13,15 @@ router.get('/', async (req, res) => {
     try {
         const peminjaman = await Peminjaman.find();
         res.json(peminjaman);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.get('/history', async (req, res) => {
+    try {
+        const peminjaman = await peminjamanRepo.getPeminjamanByAnggota(req.user.id);
+        res.json(Array.isArray(peminjaman) ? peminjaman : []);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
