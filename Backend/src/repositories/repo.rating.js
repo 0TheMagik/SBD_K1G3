@@ -67,3 +67,15 @@ exports.getAverageRating = async (bookId) => {
         throw new Error(`Error calculating average rating: ${err.message}`);
     }
 };
+
+exports.deleteRatingById = async (id) => {
+    try {
+        const deleted = await Rating.findByIdAndDelete(id);
+        if (!deleted) {
+            throw new Error('Rating not found');
+        }
+        return deleted;
+    } catch (error) {
+        throw new Error(`Error deleting rating by ID: ${error.message}`);
+    }
+}

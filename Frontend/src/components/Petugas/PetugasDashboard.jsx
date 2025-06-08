@@ -7,6 +7,7 @@ import MemberManagement from './MemberManagement';
 import PetugasManagement from './PetugasManagement';
 import RentalManagement from './RentalManagement';
 import KategoriManagement from './KategoriManagement';
+import CommentManagement from './CommentManagement';
 
 const PetugasDashboard = () => {
   const { currentUser, logout } = useAuth();
@@ -22,7 +23,7 @@ const PetugasDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header remains unchanged */}
+      {/* Header */}
       <div className="bg-cyan-700 text-white">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <h1 className="text-xl font-bold">Perpustakaan Dashboard</h1>
@@ -41,7 +42,7 @@ const PetugasDashboard = () => {
         </div>
       </div>
 
-      {/* Notification and error areas remain unchanged */}
+      {/* Notifications */}
       {notification && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mx-4 mt-4">
           <span className="block sm:inline">{notification}</span>
@@ -53,7 +54,7 @@ const PetugasDashboard = () => {
           </button>
         </div>
       )}
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-4 mt-4">
           <span className="block sm:inline">{error}</span>
@@ -81,7 +82,6 @@ const PetugasDashboard = () => {
             >
               Kelola Buku
             </button>
-            {/* Tambahkan tab Kelola Kategori */}
             <button
               className={`px-6 py-3 font-medium ${
                 activeTab === 'kategori' 
@@ -122,6 +122,16 @@ const PetugasDashboard = () => {
             >
               Kelola Petugas
             </button>
+            <button
+              className={`px-6 py-3 font-medium ${
+                activeTab === 'comments' 
+                ? 'border-b-2 border-cyan-600 text-cyan-600' 
+                : 'text-gray-600 hover:text-cyan-600'
+              }`}
+              onClick={() => setActiveTab('comments')}
+            >
+              Kelola Komentar
+            </button>
           </div>
 
           {/* Tab content */}
@@ -129,7 +139,6 @@ const PetugasDashboard = () => {
             {activeTab === 'books' && (
               <BookManagement setError={setError} setNotification={setNotification} />
             )}
-            {/* Tab content untuk kategori */}
             {activeTab === 'kategori' && (
               <KategoriManagement setError={setError} setNotification={setNotification} />
             )}
@@ -143,6 +152,12 @@ const PetugasDashboard = () => {
               <div>
                 <h3 className="text-lg font-bold mb-4">Kelola Petugas</h3>
                 <PetugasManagement setError={setError} setNotification={setNotification} />
+              </div>
+            )}
+            {activeTab === 'comments' && (
+              <div>
+                <h3 className="text-lg font-bold mb-4">Kelola Komentar</h3>
+                <CommentManagement setError={setError} setNotification={setNotification} />
               </div>
             )}
           </div>

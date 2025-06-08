@@ -57,4 +57,14 @@ router.get('/average/:bookId', async (req, res) => {
     }
 });
 
+router.delete('/:id',  async (req, res) => {
+    try {
+        const deletedRating = await ratingRepository.deleteRatingById(req.params.id);
+        if (!deletedRating) return res.status(404).json({ message: 'Rating not found' });
+        res.status(200).json({ message: 'Rating deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
