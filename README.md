@@ -62,10 +62,14 @@ SBD-K1G3/
 MONGODB_URI= mongodb://admin:secret@mongodb:27017
 JWT_SECRET= secret
 PORT=3000
+```
+#### Jika ingin fungsi upload gambar di gunakan, isi parameter berikut dan copy ke `.env` 
+```
 CLOUDINARY_CLOUD_NAME= [Isi bagian ini]
 CLOUDINARY_API_KEY= [Isi bagian ini]
 CLOUDINARY_API_SECRET= [Isi bagian ini]
 ```
+Parameter ini di dapat dari Cloudinary
 
 #### 🎨 Pada root direktori jalankan docker compose dengan command berikut
 ```
@@ -77,4 +81,10 @@ docker-compose up --build
 docker-compose down
 ```
 
-#### 💮 Frontend dan Backend bisa Diakses pada port yang sudah di assigned saat menjalankan image
+#### 💮 Frontend berjalan pada port 5173 dan Backend pada port 300
+
+
+
+### List URL untuk akses
+akses website (user) : http://localhost:5173  
+akses website (admin): http://localhost:5173/admin-login
