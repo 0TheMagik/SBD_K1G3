@@ -3,7 +3,7 @@ const router = express.Router();
 const bukuRepo = require('../repositories/repo.buku'); // Import the repository
 const Buku = require('../schema/Buku'); // Import the Buku schema
 const Rating = require('../schema/Rating'); // Import the Rating schema
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
 // GET all buku
 router.get('/', async (req, res) => {
     try {
@@ -101,6 +101,65 @@ router.get('/popular-books', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+// GET terbaru books
+router.get('/terbaru', async (req, res) => {
+    try {
+        // Get latest books
+        const limit = parseInt(req.query.limit) || 10;
+        const terbaruBooks = await Buku.find().sort({ _id: -1 }).limit(limit);
+        
+        // Get book IDs for rating lookup
+        const bookIds = terbaruBooks.map(book => book._id);
+        
+        // Get ratings for these books
+        const ratings = await Rating.aggregate([
+            { 
+                $match: { 
+                    book_id: { $in: bookIds.map(id => id.toString()) } 
+                }
+            },
+            { 
+                $group: {
+                    _id: "$book_id",
+                    averageRating: { $avg: "$score" },
+                    ratingCount: { $sum: 1 }
+                }
+            }
+        ]);
+        
+        // Combine book data with ratings
+        const booksWithRatings = terbaruBooks.map(book => {
+            const bookIdStr = book._id.toString();
+            const ratingInfo = ratings.find(r => r._id === bookIdStr || r._id.toString() === bookIdStr);
+            
+            return {
+                ...book.toObject(),
+                rating: ratingInfo ? ratingInfo.averageRating : null,
+                ratingCount: ratingInfo ? ratingInfo.ratingCount : 0
+            };
+        });
+        
+        res.status(200).json(booksWithRatings);
+    } catch (err) {
+        console.error('Error in /terbaru:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// GET top rated books
+router.get('/top-rated', async (req, res) => {
+    try {
+        const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+        const minRatings = req.query.minRatings ? parseInt(req.query.minRatings) : 3;
+        
+        const topRatedBooks = await bukuRepo.getTopRatedBooks(limit, minRatings);
+        res.status(200).json(topRatedBooks);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 
 // GET random books
 router.get('/random', async (req, res) => {
@@ -203,15 +262,6 @@ router.get('/category-name/:name', async (req, res) => {
     }
 });
 
-// GET terbaru books
-router.get('/terbaru', async (req, res) => {
-    try {
-        const terbaruBooks = await Buku.find().sort({ _id: -1 }).limit(10); // Sort by creation date (descending)
-        res.status(200).json(terbaruBooks);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
 
 // GET a single buku by ID
 router.get('/:id', async (req, res) => {
@@ -251,19 +301,6 @@ router.delete('/:id', async (req, res) => {
         const deletedBuku = await bukuRepo.deleteBukuById(req.params.id);
         if (!deletedBuku) return res.status(404).json({ message: 'Buku not found' });
         res.status(200).json({ message: 'Buku deleted successfully' });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-// GET top rated books
-router.get('/top-rated', async (req, res) => {
-    try {
-        const limit = req.query.limit ? parseInt(req.query.limit) : 10;
-        const minRatings = req.query.minRatings ? parseInt(req.query.minRatings) : 3;
-        
-        const topRatedBooks = await bukuRepo.getTopRatedBooks(limit, minRatings);
-        res.status(200).json(topRatedBooks);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

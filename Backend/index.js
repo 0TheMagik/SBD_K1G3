@@ -69,7 +69,7 @@ app.use('/api/public/popular-books', (req, res) => {
 // Protected routes for staff only
 app.use('/api/petugas', authenticateToken, isStaff, petugasRoutes);
 // Protected routes requiring authentication
-app.use('/api/anggota', authenticateToken, anggotaRoutes);
+app.use('/api/anggota', anggotaRoutes);
 app.use('/api/kategori', authenticateToken, kategoriRoutes);
 app.use('/api/peminjaman', authenticateToken, peminjamanRoutes);
 app.use('/api/rating', ratingRoutes); // no authentication needed for ratings

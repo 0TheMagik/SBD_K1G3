@@ -22,7 +22,8 @@ import BookDetailPage from "./components/BookDetailPage";
 import UpdatesPage from "./components/UpdatesPage";
 import RatingPage from "./components/BookRatingPage";
 import RankingPage from "./components/RankingPage";
-import HistoryPage from "./components/History"; 
+import HistoryPage from "./components/History";
+import AboutUsPage from "./components/AboutUsPage";
 
 // Protected route component
 const ProtectedRoute = ({ children, requiredRole = 'any' }) => {
@@ -126,7 +127,7 @@ const App = () => {
         <Route path="/book/:id" element={<BookDetailPage />} />
         <Route path="/updates" element={<UpdatesPage />} />
         <Route path="/ranking" element={<RankingPage />} />
-
+        <Route path="/about-us" element={<AboutUsPage />} />
         {/* Protected routes */}
         <Route 
           path="/petugas/*" 
